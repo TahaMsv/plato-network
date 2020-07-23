@@ -229,7 +229,7 @@ public class ClientHandler implements Runnable {
         currUser=getAppUserByUsername(message.substring(8));
         String chatListString=currUser.getChatList();
         try {
-            String serverMessage="a+" + chatListString;
+            String serverMessage="a+git ad " + chatListString;
             System.out.println(serverMessage);
             dos.writeUTF(serverMessage);
             dos.flush();

@@ -83,19 +83,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private void chatList(String message) {
-        currUser=getAppUserByUsername(message.substring(8));
-        String chatListString=currUser.getChatList();
-        try {
-            String serverMessage="a" + chatListString;
-            System.out.println(serverMessage);
-            dos.writeUTF(serverMessage);
-            dos.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-    }
 
     public String checkSignUpValidation(String mess) {
         boolean isUsernameOk = false;
@@ -138,21 +126,21 @@ public class ClientHandler implements Runnable {
     }
 
     public void signIn() {
-//        String username = "", password = "";
-//        try {
-//            username = ClientHandler.dis.readUTF();
-//            password = ClientHandler.dis.readUTF();
-//            System.out.println("user " + username + " " + password);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        String answer = getAppUser(username, password);
-//        try {
-//            ClientHandler.dos.writeUTF(answer);
-//            ClientHandler.dos.flush();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        String username = "", password = "";
+        try {
+            username = dis.readUTF();
+            password = dis.readUTF();
+            System.out.println("user " + username + " " + password);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String answer = getAppUser(username, password);
+        try {
+            dos.writeUTF(answer);
+            dos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -239,17 +227,30 @@ public class ClientHandler implements Runnable {
             e.printStackTrace();
         }
     }
+    private void chatList(String message) {
+        currUser=getAppUserByUsername(message.substring(8));
+        String chatListString=currUser.getChatList();
+        try {
+            String serverMessage="a+" + chatListString;
+            System.out.println(serverMessage);
+            dos.writeUTF(serverMessage);
+            dos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     private void loadMessages(String clMsg) {
         String[] data = clMsg.split("\\+");
         String friend = data[1];
         currUser = getAppUserByUsername(data[2]);
-        String jafar = currUser.getAllMessages().get(friend);
-        System.out.println(jafar);
+        String currentFriendMessages = currUser.getAllMessages().get(friend);
+        System.out.println(currentFriendMessages);
         try {
-            if (jafar != null) {
+            if (currentFriendMessages != null) {
                 System.out.println(171);
-                dos.writeUTF(jafar);
+                dos.writeUTF(currentFriendMessages);
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {

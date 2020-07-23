@@ -136,21 +136,21 @@ public class ClientHandler implements Runnable {
     }
 
     public void signIn() {
-//        String username = "", password = "";
-//        try {
-//            username = ClientHandler.dis.readUTF();
-//            password = ClientHandler.dis.readUTF();
-//            System.out.println("user " + username + " " + password);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        String answer = getAppUser(username, password);
-//        try {
-//            ClientHandler.dos.writeUTF(answer);
-//            ClientHandler.dos.flush();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        String username = "", password = "";
+        try {
+            username = dis.readUTF();
+            password = dis.readUTF();
+            System.out.println("user " + username + " " + password);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String answer = getAppUser(username, password);
+        try {
+            dos.writeUTF(answer);
+            dos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 

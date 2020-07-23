@@ -191,6 +191,7 @@ public class ClientHandler implements Runnable {
                 currUser.addNewFriend(appUser);
                 appUser.addNewFriend(currUser);
                 addNewFriendToUserFriendListFile(currUser.getUsername(), friendUsername);
+                addNewFriendToUserFriendListFile(friendUsername, currUser.getUsername());
                 return "ok " + appUser.getUsername() + " added to your friends successfully";
             }
         }
@@ -271,9 +272,9 @@ public class ClientHandler implements Runnable {
     }
 
     private void chatSenderMessage(String clMsg) {
-        String[] data = clMsg.split("\\+");  // data[1]=sender ,  data[2]=receiver, data[3]=message
+        String[] data = clMsg.split("\\+");  // data[1]=sender ,  data[2]=receiver, data[3]=message , data[4]=time
         currUser = getAppUserByUsername(data[1]);
-        String currentMessage = data[1] + "," + data[2] + "," + data[3];
+        String currentMessage = data[1] + "," + data[2] + "," + data[3] + "," + data[4];
         Set set = Server.users.keySet();
         String m = currUser.getAllMessages().get(data[2]);
         m += ("+" + currentMessage);
@@ -285,6 +286,7 @@ public class ClientHandler implements Runnable {
                 receiverAppUser = t;
                 receiverAppUser.getAllMessages().put(data[1], m);
                 addChatToJsonFile(currUser.getUsername(), receiverAppUser.getUsername(), currentMessage);
+                addChatToJsonFile(receiverAppUser.getUsername(), currUser.getUsername(), currentMessage);
             }
         }
     }
@@ -426,20 +428,20 @@ public class ClientHandler implements Runnable {
                 } else {
                     eachPerson.put("friends", friend + "+");
                 }
-                Server.userJsonArray.put(eachPerson);
+//                Server.userJsonArray.put(eachPerson);
                 break;
             }
         }
         writeToFile();
     }
 
-    private void addChatToJsonFile(String username, String friendName,String newMessage) {
+    private void addChatToJsonFile(String username, String friendName, String newMessage) {
         for (Object val : Server.userJsonArray) {
             JSONObject eachPerson = (JSONObject) val;
             if (eachPerson.getString("username").equals(username)) {
-                if (eachPerson.keySet().contains("chats")){
+                if (eachPerson.keySet().contains("chats")) {
                     JSONObject allChats = eachPerson.getJSONObject("chats");
-                    if (allChats.keySet().contains(friendName)){
+                    if (allChats.keySet().contains(friendName)) {
                         String prevChats = allChats.getString(friendName);
                         prevChats += newMessage + "+";
                         allChats.put(friendName, prevChats);
@@ -448,12 +450,12 @@ public class ClientHandler implements Runnable {
                         allChats.put(friendName, newMessage);
                         eachPerson.put("chats", allChats);
                     }
-                } else{
+                } else {
                     JSONObject onePersonChat = new JSONObject();
                     onePersonChat.put(friendName, newMessage + "+");
                     eachPerson.put("chats", onePersonChat);
                 }
-                Server.userJsonArray.put(eachPerson);
+//                Server.userJsonArray.put(eachPerson);
                 break;
             }
         }
@@ -461,7 +463,7 @@ public class ClientHandler implements Runnable {
     }
 
     private void writeToFile() {
-        try (FileWriter file = new FileWriter("D:\\android\\net\\src\\data_base.json")) {
+        try (FileWriter file = new FileWriter("C:\\Users\\Tahamousavi\\IdeaProjects\\ServerPlato_3\\src\\data_base.json")) {
 
             file.write(Server.json.toString());
             file.flush();

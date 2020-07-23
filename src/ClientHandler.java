@@ -63,10 +63,25 @@ public class ClientHandler implements Runnable {
                 } else if (message.startsWith("gameLeaderBoard")) {
                     gameLeaderBoard(message);
                 }
+                else if(message.startsWith("chatList")){
+                    chatList(message);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void chatList(String message) {
+        currUser=getAppUserByUsername(message.substring(8));
+        String chatListString=currUser.getChatList();
+        try {
+            dos.writeUTF("a" + chatListString);
+            dos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static String checkSignUpValidation(String mess) {

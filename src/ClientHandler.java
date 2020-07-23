@@ -2,6 +2,7 @@ import org.json.JSONObject;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -11,8 +12,8 @@ import java.util.Set;
 public class ClientHandler implements Runnable {
 
     private static Socket socket;
-    private  DataInputStream dis;
-    private  DataOutputStream dos;
+    private DataInputStream dis;
+    private DataOutputStream dos;
     public static String wordHangman;
     String message;
     AppUsers currUser;
@@ -61,7 +62,7 @@ public class ClientHandler implements Runnable {
                     chatSenderMessage(message);
                 } else if (message.startsWith("gameXORank")) {
                     gameXORank(message);
-                } else if (message.startsWith("gameHangmanRank")){
+                } else if (message.startsWith("gameHangmanRank")) {
                     gameHangmanRank(message);
                 } else if (message.startsWith("gameLeaderBoard")) {
                     gameLeaderBoard(message);
@@ -71,10 +72,9 @@ public class ClientHandler implements Runnable {
                     waitToStartGame();
                 } else if (message.startsWith("HangmanWinMsg")) {
                     winRoundOfHangman(message);
-                } else if (message.startsWith("hangmanChooserWait")){
+                } else if (message.startsWith("hangmanChooserWait")) {
                     hangmanChooserWait();
-                }
-                else if(message.startsWith("chatList")){
+                } else if (message.startsWith("chatList")) {
                     chatList(message);
                 }
             }
@@ -82,7 +82,6 @@ public class ClientHandler implements Runnable {
             e.printStackTrace();
         }
     }
-
 
 
     public String checkSignUpValidation(String mess) {
@@ -162,6 +161,7 @@ public class ClientHandler implements Runnable {
     private void addFriend(String clMessage) {
         System.out.println("at add friend");
         String[] addFriendParts = clMessage.split("\\+");
+        String username = addFriendParts[2];
         currUser = getAppUserByUsername(addFriendParts[2]);
         String answer = searchForFriend(addFriendParts[1]);
         System.out.println(currUser.getUsername());
@@ -190,7 +190,7 @@ public class ClientHandler implements Runnable {
             if (appUser.getUsername().equals(friendUsername)) {
                 currUser.addNewFriend(appUser);
                 appUser.addNewFriend(currUser);
-//                addNewFriendsToFile(currentAppUser.getUsername(), friendUsername);
+                addNewFriendToUserFriendListFile(currUser.getUsername(), friendUsername);
                 return "ok " + appUser.getUsername() + " added to your friends successfully";
             }
         }
@@ -207,7 +207,7 @@ public class ClientHandler implements Runnable {
     }
 
     private String changePassword(String clMsg) {
-        String [] splitedStr = clMsg.split("\\+");
+        String[] splitedStr = clMsg.split("\\+");
         currUser = getAppUserByUsername(splitedStr[1]);
         String newPassword = splitedStr[2];
 //        changeUserPasswordInFile(currentAppUser.getUsername(), password, newPassword);
@@ -219,7 +219,7 @@ public class ClientHandler implements Runnable {
         currUser = getAppUserByUsername(clMsg.substring(10));
         System.out.println(currUser.friendsStringListString());
         try {
-            String serverMessage="a+" + currUser.friendsStringListString();
+            String serverMessage = "a+" + currUser.friendsStringListString();
             System.out.println(serverMessage);
             dos.writeUTF(serverMessage);
             dos.flush();
@@ -229,10 +229,10 @@ public class ClientHandler implements Runnable {
     }
 
     private void chatList(String message) {
-        currUser=getAppUserByUsername(message.substring(8));
-        String chatListString=currUser.getChatList();
+        currUser = getAppUserByUsername(message.substring(8));
+        String chatListString = currUser.getChatList();
         try {
-            String serverMessage="a+" + chatListString;
+            String serverMessage = "a+" + chatListString;
             System.out.println(serverMessage);
             dos.writeUTF(serverMessage);
             dos.flush();
@@ -284,15 +284,16 @@ public class ClientHandler implements Runnable {
             if (t.getUsername().equals(data[2])) {
                 receiverAppUser = t;
                 receiverAppUser.getAllMessages().put(data[1], m);
+                addChatToJsonFile(currUser.getUsername(), receiverAppUser.getUsername(), currentMessage);
             }
         }
     }
 
-    private AppUsers getAppUserByUsername(String username){
+    private AppUsers getAppUserByUsername(String username) {
         Set users = Server.users.keySet();
-        for (Object o:users) {
+        for (Object o : users) {
             AppUsers a = (AppUsers) o;
-            if (a.getUsername().equals(username)){
+            if (a.getUsername().equals(username)) {
                 return a;
             }
         }
@@ -312,9 +313,9 @@ public class ClientHandler implements Runnable {
                     try {
                         currUser.setWantToPlayXORank(false);
                         foundSomeOneToPlay = true;
-                        if (currUser.getUsername().compareTo(appUser.getUsername()) > 0){
+                        if (currUser.getUsername().compareTo(appUser.getUsername()) > 0) {
                             dos.writeUTF("startXO" + "1");
-                        } else{
+                        } else {
                             dos.writeUTF("startXO" + "0");
                         }
                         dos.flush();
@@ -351,8 +352,7 @@ public class ClientHandler implements Runnable {
                                 String playerPlayer = currUser.getUsername();
                                 dos.writeUTF("startHangman+" + "Player+" + chooserPlayer + "+" + playerPlayer);
                             }
-                        }
-                        else if (timesOfPlay == 1){
+                        } else if (timesOfPlay == 1) {
                             if (currUser.getUsername().compareTo(appUser.getUsername()) < 0) {
                                 String chooserPlayer = currUser.getUsername();
                                 String playerPlayer = appUser.getUsername();
@@ -378,7 +378,7 @@ public class ClientHandler implements Runnable {
     }
 
     private void waitToStartGame() {
-        while (wordHangman.equals(""));
+        while (wordHangman.equals("")) ;
         try {
             dos.writeUTF("hangmanWordPlay" + wordHangman);
         } catch (IOException e) {
@@ -386,7 +386,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private void winRoundOfHangman(String clMsg){
+    private void winRoundOfHangman(String clMsg) {
         String winnerUsername = clMsg.substring(13);
         currUser = getAppUserByUsername(winnerUsername);
         currUser.setHangmanScore();
@@ -394,8 +394,8 @@ public class ClientHandler implements Runnable {
         ///
     }
 
-    private void hangmanChooserWait(){
-        while (!wordHangman.equals(""));
+    private void hangmanChooserWait() {
+        while (!wordHangman.equals("")) ;
         try {
             dos.writeUTF("finishedPlayingHangman");
         } catch (IOException e) {
@@ -403,14 +403,73 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private void gameLeaderBoard(String clMsg){
+    private void gameLeaderBoard(String clMsg) {
         System.out.println(clMsg);
     }
 
-    private void addNewUserToJsonFile(String username, String password){
+    private void addNewUserToJsonFile(String username, String password) {
         JSONObject newUser = new JSONObject();
         newUser.put("username", username);
         newUser.put("password", password);
+        Server.userJsonArray.put(newUser);
+        writeToFile();
     }
+
+    private void addNewFriendToUserFriendListFile(String username, String friend) {
+        for (Object val : Server.userJsonArray) {
+            JSONObject eachPerson = (JSONObject) val;
+            if (eachPerson.getString("username").equals(username)) {
+                if (eachPerson.keySet().contains("friends")) {
+                    String listOfFriends = eachPerson.getString("friends");
+                    listOfFriends += friend + "+";
+                    eachPerson.put("friends", listOfFriends);
+                } else {
+                    eachPerson.put("friends", friend + "+");
+                }
+                Server.userJsonArray.put(eachPerson);
+                break;
+            }
+        }
+        writeToFile();
+    }
+
+    private void addChatToJsonFile(String username, String friendName,String newMessage) {
+        for (Object val : Server.userJsonArray) {
+            JSONObject eachPerson = (JSONObject) val;
+            if (eachPerson.getString("username").equals(username)) {
+                if (eachPerson.keySet().contains("chats")){
+                    JSONObject allChats = eachPerson.getJSONObject("chats");
+                    if (allChats.keySet().contains(friendName)){
+                        String prevChats = allChats.getString(friendName);
+                        prevChats += newMessage + "+";
+                        allChats.put(friendName, prevChats);
+                        eachPerson.put("chats", allChats);
+                    } else {
+                        allChats.put(friendName, newMessage);
+                        eachPerson.put("chats", allChats);
+                    }
+                } else{
+                    JSONObject onePersonChat = new JSONObject();
+                    onePersonChat.put(friendName, newMessage + "+");
+                    eachPerson.put("chats", onePersonChat);
+                }
+                Server.userJsonArray.put(eachPerson);
+                break;
+            }
+        }
+        writeToFile();
+    }
+
+    private void writeToFile() {
+        try (FileWriter file = new FileWriter("D:\\android\\net\\src\\data_base.json")) {
+
+            file.write(Server.json.toString());
+            file.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }

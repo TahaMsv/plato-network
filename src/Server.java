@@ -19,11 +19,11 @@ public class Server {
         setUsersFromFile();
         ServerSocket serverSocket = new ServerSocket(3000);
         users = new ConcurrentHashMap<>();
-//        while (true) {
-//            Socket socket = serverSocket.accept();      // wait for a client to connect
-//            ClientHandler temp = new ClientHandler(socket);
-//            (new Thread(temp)).start();
-//        }
+        while (true) {
+            Socket socket = serverSocket.accept();      // wait for a client to connect
+            ClientHandler temp = new ClientHandler(socket);
+            (new Thread(temp)).start();
+        }
 
     }
 

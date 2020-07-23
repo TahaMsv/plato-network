@@ -500,7 +500,7 @@ public class ClientHandler implements Runnable {
     }
 
     private void writeToFile() {
-        try (FileWriter file = new FileWriter("C:\\Users\\Tahamousavi\\IdeaProjects\\ServerPlato_3\\src\\data_base.json")) {
+        try (FileWriter file = new FileWriter("D:\\android\\net\\src\\data_base.json")) {
 
             file.write(Server.json.toString());
             file.flush();

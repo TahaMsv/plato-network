@@ -11,6 +11,7 @@ public class ClientHandler implements Runnable {
     private static Socket socket;
     private static DataInputStream dis;
     private static DataOutputStream dos;
+    public static String wordHangman;
     String message;
     AppUsers currUser;
 
@@ -62,6 +63,14 @@ public class ClientHandler implements Runnable {
                     gameHangmanRank(message);
                 } else if (message.startsWith("gameLeaderBoard")) {
                     gameLeaderBoard(message);
+                } else if (message.startsWith("chosenWordHangMan")) {
+                    onePlayerChoseTheWordForHangman(message);
+                } else if (message.startsWith("waitingRoomForHangman")) {
+                    waitToStartGame();
+                } else if (message.startsWith("HangmanWinMsg")) {
+                    winRoundOfHangman(message);
+                } else if (message.startsWith("hangmanChooserWait")){
+                    hangmanChooserWait();
                 }
             }
         } catch (Exception e) {
@@ -294,22 +303,41 @@ public class ClientHandler implements Runnable {
     }
 
     private void gameHangmanRank(String clMsg) {
-        String username = clMsg.substring(15);
+        String[] strings = clMsg.split("\\+");
+        String username = strings[1];
+        int timesOfPlay = Integer.parseInt(strings[2]);
         currUser = getAppUserByUsername(username);
-        currUser.setWantToPlayXORank(true);
+        currUser.setWantToPlayHangmanRank(true);
         boolean foundSomeOneToPlay = false;
         while (!foundSomeOneToPlay) {
             Set appUsers = Server.users.keySet();
             for (Object val : appUsers) {
                 AppUsers appUser = (AppUsers) val;
-                if (appUser.isWantToPlayXORank() && !appUser.equals(currUser)) {
+                if (appUser.isWantToPlayHangmanRank() && !appUser.equals(currUser)) {
                     try {
                         currUser.setWantToPlayHangmanRank(false);
                         foundSomeOneToPlay = true;
-                        if (currUser.getUsername().compareTo(appUser.getUsername()) > 0){
-                            dos.writeUTF("startHangman" + "chooser");
-                        } else{
-                            dos.writeUTF("startHangman" + "player");
+                        if (timesOfPlay == 2) {
+                            if (currUser.getUsername().compareTo(appUser.getUsername()) > 0) {
+                                String chooserPlayer = currUser.getUsername();
+                                String playerPlayer = appUser.getUsername();
+                                dos.writeUTF("startHangman+" + "Chooser+" + chooserPlayer + "+" + playerPlayer);
+                            } else {
+                                String chooserPlayer = appUser.getUsername();
+                                String playerPlayer = currUser.getUsername();
+                                dos.writeUTF("startHangman+" + "Player+" + chooserPlayer + "+" + playerPlayer);
+                            }
+                        }
+                        else if (timesOfPlay == 1){
+                            if (currUser.getUsername().compareTo(appUser.getUsername()) < 0) {
+                                String chooserPlayer = currUser.getUsername();
+                                String playerPlayer = appUser.getUsername();
+                                dos.writeUTF("startHangman+" + "Chooser+" + chooserPlayer + "+" + playerPlayer);
+                            } else {
+                                String chooserPlayer = appUser.getUsername();
+                                String playerPlayer = currUser.getUsername();
+                                dos.writeUTF("startHangman+" + "Player+" + chooserPlayer + "+" + playerPlayer);
+                            }
                         }
                         dos.flush();
                     } catch (IOException e) {
@@ -320,6 +348,36 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    private void onePlayerChoseTheWordForHangman(String clMsg) {
+        String[] word = clMsg.split("\\+");
+        wordHangman = word[2];
+    }
+
+    private void waitToStartGame() {
+        while (wordHangman.equals(""));
+        try {
+            dos.writeUTF("hangmanWordPlay" + wordHangman);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void winRoundOfHangman(String clMsg){
+        String winnerUsername = clMsg.substring(13);
+        currUser = getAppUserByUsername(winnerUsername);
+        currUser.setHangmanScore();
+        wordHangman = "";
+        ///
+    }
+
+    private void hangmanChooserWait(){
+        while (!wordHangman.equals(""));
+        try {
+            dos.writeUTF("finishedPlayingHangman");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     private void gameLeaderBoard(String clMsg){
         System.out.println(clMsg);
     }

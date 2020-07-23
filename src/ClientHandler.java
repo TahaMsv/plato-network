@@ -122,7 +122,7 @@ public class ClientHandler implements Runnable {
         currUser = new AppUsers(username, password);
         Server.users.put(currUser, this);
         System.out.println("username : " + username + " password : " + password);
-
+        addNewUserToJsonFile(username, password);
     }
 
     public void signIn() {
@@ -227,6 +227,7 @@ public class ClientHandler implements Runnable {
             e.printStackTrace();
         }
     }
+
     private void chatList(String message) {
         currUser=getAppUserByUsername(message.substring(8));
         String chatListString=currUser.getChatList();

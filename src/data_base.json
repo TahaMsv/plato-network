@@ -1,20 +1,4 @@
 {
   "user_info": [
-    {
-      "password": "1111111",
-      "chats": {
-        "saba": "saba,taha,d,18:55+saba,taha,dvadadva,18:55+"
-      },
-      "friends": "saba+",
-      "username": "taha"
-    },
-    {
-      "password": "111111",
-      "chats": {
-        "taha": "saba,taha,d,18:55+saba,taha,dvadadva,18:55+"
-      },
-      "friends": "taha+",
-      "username": "saba"
-    }
   ]
 }

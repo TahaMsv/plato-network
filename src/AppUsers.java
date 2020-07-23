@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AppUsers {
@@ -141,4 +142,13 @@ public class AppUsers {
         return string;
     }
 
+    public String getChatList() {
+        String chatList="";
+        for (int i = 0; i <friends.size() ; i++) {
+            if(allMessages.get(friends.get(i).username)!=null){
+                chatList+=(allMessages.get(friends.get(i).username)+"+");
+            }
+        }
+        return chatList;
+    }
 }

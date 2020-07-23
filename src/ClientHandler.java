@@ -72,10 +72,27 @@ public class ClientHandler implements Runnable {
                 } else if (message.startsWith("hangmanChooserWait")){
                     hangmanChooserWait();
                 }
+                else if(message.startsWith("chatList")){
+                    chatList(message);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void chatList(String message) {
+        currUser=getAppUserByUsername(message.substring(8));
+        String chatListString=currUser.getChatList();
+        try {
+            String serverMessage="a" + chatListString;
+            System.out.println(serverMessage);
+            dos.writeUTF(serverMessage);
+            dos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static String checkSignUpValidation(String mess) {
@@ -153,6 +170,7 @@ public class ClientHandler implements Runnable {
     }
 
     private void addFriend(String clMessage) {
+        System.out.println("at add friend");
         String[] addFriendParts = clMessage.split("\\+");
         currUser = getAppUserByUsername(addFriendParts[2]);
         String answer = searchForFriend(addFriendParts[1]);
@@ -211,7 +229,9 @@ public class ClientHandler implements Runnable {
         currUser = getAppUserByUsername(clMsg.substring(10));
         System.out.println(currUser.friendsStringListString());
         try {
-            dos.writeUTF("a" + currUser.friendsStringListString());
+            String serverMessage="a+" + currUser.friendsStringListString();
+            System.out.println(serverMessage);
+            dos.writeUTF(serverMessage);
             dos.flush();
         } catch (IOException e) {
             e.printStackTrace();

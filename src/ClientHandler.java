@@ -76,7 +76,9 @@ public class ClientHandler implements Runnable {
         currUser=getAppUserByUsername(message.substring(8));
         String chatListString=currUser.getChatList();
         try {
-            dos.writeUTF("a" + chatListString);
+            String serverMessage="a" + chatListString;
+            System.out.println(serverMessage);
+            dos.writeUTF(serverMessage);
             dos.flush();
         } catch (IOException e) {
             e.printStackTrace();
@@ -159,6 +161,7 @@ public class ClientHandler implements Runnable {
     }
 
     private void addFriend(String clMessage) {
+        System.out.println("at add friend");
         String[] addFriendParts = clMessage.split("\\+");
         currUser = getAppUserByUsername(addFriendParts[2]);
         String answer = searchForFriend(addFriendParts[1]);
@@ -217,7 +220,9 @@ public class ClientHandler implements Runnable {
         currUser = getAppUserByUsername(clMsg.substring(10));
         System.out.println(currUser.friendsStringListString());
         try {
-            dos.writeUTF("a" + currUser.friendsStringListString());
+            String serverMessage="a+" + currUser.friendsStringListString();
+            System.out.println(serverMessage);
+            dos.writeUTF(serverMessage);
             dos.flush();
         } catch (IOException e) {
             e.printStackTrace();

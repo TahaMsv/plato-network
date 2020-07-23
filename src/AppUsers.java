@@ -146,7 +146,7 @@ public class AppUsers {
         String chatList="";
         for (int i = 0; i <friends.size() ; i++) {
             if(allMessages.get(friends.get(i).username)!=null){
-                chatList+=(allMessages.get(friends.get(i).username)+"+");
+                chatList+=(friends.get(i).username+"+");
             }
         }
         return chatList;

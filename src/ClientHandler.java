@@ -81,19 +81,7 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private void chatList(String message) {
-        currUser=getAppUserByUsername(message.substring(8));
-        String chatListString=currUser.getChatList();
-        try {
-            String serverMessage="a" + chatListString;
-            System.out.println(serverMessage);
-            dos.writeUTF(serverMessage);
-            dos.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-    }
 
     public String checkSignUpValidation(String mess) {
         boolean isUsernameOk = false;
@@ -236,6 +224,19 @@ public class ClientHandler implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    private void chatList(String message) {
+        currUser=getAppUserByUsername(message.substring(8));
+        String chatListString=currUser.getChatList();
+        try {
+            String serverMessage="a+" + chatListString;
+            System.out.println(serverMessage);
+            dos.writeUTF(serverMessage);
+            dos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void loadMessages(String clMsg) {

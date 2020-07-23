@@ -1,3 +1,5 @@
+import org.json.JSONObject;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -401,6 +403,12 @@ public class ClientHandler implements Runnable {
 
     private void gameLeaderBoard(String clMsg){
         System.out.println(clMsg);
+    }
+
+    private void addNewUserToJsonFile(String username, String password){
+        JSONObject newUser = new JSONObject();
+        newUser.put("username", username);
+        newUser.put("password", password);
     }
 
 }

@@ -9,8 +9,8 @@ import java.util.Set;
 public class ClientHandler implements Runnable {
 
     private static Socket socket;
-    private static DataInputStream dis;
-    private static DataOutputStream dos;
+    private  DataInputStream dis;
+    private  DataOutputStream dos;
     public static String wordHangman;
     String message;
     AppUsers currUser;
@@ -95,7 +95,7 @@ public class ClientHandler implements Runnable {
 
     }
 
-    public static String checkSignUpValidation(String mess) {
+    public String checkSignUpValidation(String mess) {
         boolean isUsernameOk = false;
         String username = mess.substring(15);
         while (!isUsernameOk) {
@@ -136,21 +136,21 @@ public class ClientHandler implements Runnable {
     }
 
     public void signIn() {
-        String username = "", password = "";
-        try {
-            username = ClientHandler.dis.readUTF();
-            password = ClientHandler.dis.readUTF();
-            System.out.println("user " + username + " " + password);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String answer = getAppUser(username, password);
-        try {
-            ClientHandler.dos.writeUTF(answer);
-            ClientHandler.dos.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        String username = "", password = "";
+//        try {
+//            username = ClientHandler.dis.readUTF();
+//            password = ClientHandler.dis.readUTF();
+//            System.out.println("user " + username + " " + password);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        String answer = getAppUser(username, password);
+//        try {
+//            ClientHandler.dos.writeUTF(answer);
+//            ClientHandler.dos.flush();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
     }
 

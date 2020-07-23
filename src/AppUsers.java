@@ -62,6 +62,10 @@ public class AppUsers {
         this.password = password;
     }
 
+    public void setFriends(ArrayList<AppUsers> friends) {
+        this.friends = friends;
+    }
+
     public void setStringFriends(ArrayList<String> stringFriends) {
         this.stringFriends = stringFriends;
     }

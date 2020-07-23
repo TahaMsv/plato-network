@@ -126,6 +126,7 @@ public class ClientHandler implements Runnable {
         Server.users.put(currUser, this);
         System.out.println("username : " + username + " password : " + password);
         addNewUserToJsonFile(username, password);
+        Server.setOfUsers.add(currUser);
     }
 
     public void signIn() {
@@ -156,7 +157,15 @@ public class ClientHandler implements Runnable {
             if (appUsers.getUsername().equals(name)) {
                 if (appUsers.getPassword().equals(password)) {
                     currUser = appUsers;
-                    String fr = returnListOfFriends(name);
+
+                    for (AppUsers appUser:Server.setOfUsers) {
+                        if (currUser.getUsername().equals(appUser.getUsername())){
+                            currUser.setFriends(appUser.getFriends());
+                            currUser.setAllMessages(appUser.getAllMessages());
+                        }
+                    }
+
+
                     Server.users.put(currUser, this);
                     status = 2;
                 } else {

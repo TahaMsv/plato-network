@@ -229,7 +229,7 @@ public class ClientHandler implements Runnable {
         currUser=getAppUserByUsername(message.substring(8));
         String chatListString=currUser.getChatList();
         try {
-            String serverMessage="a+git ad " + chatListString;
+            String serverMessage="a+" + chatListString;
             System.out.println(serverMessage);
             dos.writeUTF(serverMessage);
             dos.flush();
@@ -243,12 +243,12 @@ public class ClientHandler implements Runnable {
         String[] data = clMsg.split("\\+");
         String friend = data[1];
         currUser = getAppUserByUsername(data[2]);
-        String jafar = currUser.getAllMessages().get(friend);
-        System.out.println(jafar);
+        String currentFriendMessages = currUser.getAllMessages().get(friend);
+        System.out.println(currentFriendMessages);
         try {
-            if (jafar != null) {
+            if (currentFriendMessages != null) {
                 System.out.println(171);
-                dos.writeUTF(jafar);
+                dos.writeUTF(currentFriendMessages);
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {

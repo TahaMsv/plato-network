@@ -144,18 +144,43 @@ public class ClientHandler implements Runnable {
     }
 
     private String getAppUser(String name, String password) {
+        int status = 0;
+
         Set keySets = Server.users.keySet();
         for (Object keySet : keySets) {
             AppUsers appUsers = (AppUsers) keySet;
             if (appUsers.getUsername().equals(name)) {
                 if (appUsers.getPassword().equals(password)) {
                     currUser = appUsers;
-                    return "okSignIn";
-                } else
-                    return "wrongPassword";
+                    String fr = returnListOfFriends(name);
+                    Server.users.put(currUser,this);
+                    status = 2;
+                } else {
+                    status = 1;
+                }
             }
         }
-        return "wrongUsername";
+        if (status == 0) {
+            if (findUserInFileWhileSignIn(name)) {
+                if (foundUserHasTruePass(name, password)){
+                    status = 3;
+                } else{
+                    status = 4;
+                }
+            }
+        }
+
+        if (status == 0) {
+            return "wrongUsername";
+        } else if (status == 1) {
+            return "wrongPassword";
+        } else if (status == 2) {
+            return "okSignIn";
+        } else if (status == 3){
+            return "okSignIn";
+        } else {
+            return "wrongPassword";
+        }
     }
 
     private void addFriend(String clMessage) {
@@ -471,6 +496,41 @@ public class ClientHandler implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean findUserInFileWhileSignIn(String username) {
+        for (Object o : Server.userJsonArray) {
+            JSONObject eachPerson = (JSONObject) o;
+            if (eachPerson.getString("username").equals(username)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean foundUserHasTruePass(String username, String password) {
+        for (Object o : Server.userJsonArray) {
+            JSONObject eachPerson = (JSONObject) o;
+            if (eachPerson.getString("username").equals(username)) {
+                if (eachPerson.getString("password").equals(password))
+                    return true;
+                else return false;
+            }
+        }
+        return false;
+    }
+
+    private String returnListOfFriends(String username) {
+        String listOfFriends = "";
+        for (Object o : Server.userJsonArray) {
+            JSONObject eachPerson = (JSONObject) o;
+            if (eachPerson.getString("username").equals(username)) {
+                if (JsonUtils.objectExists(eachPerson, "friends")){
+                    listOfFriends = eachPerson.getString("friends");
+                }
+            }
+        }
+        return listOfFriends;
     }
 
 

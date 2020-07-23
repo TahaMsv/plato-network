@@ -94,23 +94,27 @@ public class ClientHandler implements Runnable {
                 AppUsers appUsers = (AppUsers) allUser;
                 usernames.add(appUsers.getUsername());
             }
+            String serverMessage = "";
             if (usernames.contains(username)) {
-                String errorMessage = "err: UserName already exists... please enter another one: ";
-                try {
-                    dos.writeUTF(errorMessage);
-                    dos.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
+                serverMessage = "err: UserName already exists... please enter another one: ";
             } else {
-                String okMessage = "correctUsername";
-                try {
-                    dos.writeUTF(okMessage);
-                    dos.flush();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                serverMessage = "correctUsername";
+            }
+
+            if (serverMessage.startsWith("err:")) {
+
+                if (findUserInFileWhileSignIn(username)) {
+                    serverMessage = "err: UserName already exists... please enter another one: ";
+                } else {
+                    serverMessage = "correctUsername";
                 }
+            }
+
+            try {
+                dos.writeUTF(serverMessage);
+                dos.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
             isUsernameOk = true;
         }
@@ -153,7 +157,7 @@ public class ClientHandler implements Runnable {
                 if (appUsers.getPassword().equals(password)) {
                     currUser = appUsers;
                     String fr = returnListOfFriends(name);
-                    Server.users.put(currUser,this);
+                    Server.users.put(currUser, this);
                     status = 2;
                 } else {
                     status = 1;
@@ -162,9 +166,9 @@ public class ClientHandler implements Runnable {
         }
         if (status == 0) {
             if (findUserInFileWhileSignIn(name)) {
-                if (foundUserHasTruePass(name, password)){
+                if (foundUserHasTruePass(name, password)) {
                     status = 3;
-                } else{
+                } else {
                     status = 4;
                 }
             }
@@ -176,7 +180,7 @@ public class ClientHandler implements Runnable {
             return "wrongPassword";
         } else if (status == 2) {
             return "okSignIn";
-        } else if (status == 3){
+        } else if (status == 3) {
             return "okSignIn";
         } else {
             return "wrongPassword";
@@ -227,7 +231,7 @@ public class ClientHandler implements Runnable {
         String[] splitedString = clMsg.split("\\+");
         currUser = getAppUserByUsername(splitedString[1]);
         String newUsername = splitedString[2];
-//        changeTheUsernameInFile(currentAppUser.getUsername(), newUsername);
+        changeUsernameInJson(currUser.getUsername(), newUsername);
         currUser.setUsername(newUsername);
         return newUsername;
     }
@@ -236,7 +240,7 @@ public class ClientHandler implements Runnable {
         String[] splitedStr = clMsg.split("\\+");
         currUser = getAppUserByUsername(splitedStr[1]);
         String newPassword = splitedStr[2];
-//        changeUserPasswordInFile(currentAppUser.getUsername(), password, newPassword);
+        changPasswordInJson(currUser.getUsername(), newPassword);
         currUser.setPassword(newPassword);
         return newPassword;
     }
@@ -453,7 +457,6 @@ public class ClientHandler implements Runnable {
                 } else {
                     eachPerson.put("friends", friend + "+");
                 }
-//                Server.userJsonArray.put(eachPerson);
                 break;
             }
         }
@@ -525,12 +528,32 @@ public class ClientHandler implements Runnable {
         for (Object o : Server.userJsonArray) {
             JSONObject eachPerson = (JSONObject) o;
             if (eachPerson.getString("username").equals(username)) {
-                if (JsonUtils.objectExists(eachPerson, "friends")){
+                if (JsonUtils.objectExists(eachPerson, "friends")) {
                     listOfFriends = eachPerson.getString("friends");
                 }
             }
         }
         return listOfFriends;
+    }
+
+    private void changeUsernameInJson(String oldUser, String newUser) {
+        for (Object val : Server.userJsonArray) {
+            JSONObject eachPerson = (JSONObject) val;
+            if (eachPerson.getString("username").equals(oldUser)) {
+                String allFile = Server.json.toString();
+                allFile = allFile.replace(oldUser, newUser);
+                Server.json = new JSONObject(allFile);
+            }
+        }
+    }
+
+    private void changPasswordInJson(String username, String newPass) {
+        for (Object val : Server.userJsonArray) {
+            JSONObject eachPerson = (JSONObject) val;
+            if (eachPerson.getString("username").equals(username)) {
+                eachPerson.put("password", newPass);
+            }
+        }
     }
 
 

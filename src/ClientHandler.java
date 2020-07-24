@@ -449,9 +449,9 @@ public class ClientHandler implements Runnable {
     private void gameLeaderBoardXO() {
         JSONArray xoTop = (JSONArray) Server.json.get("topXO");
         String top10 = "";
-        for (Object ob:xoTop) {
+        for (Object ob : xoTop) {
             JSONObject job = (JSONObject) ob;
-            top10 += job.getString("username") + "," + job.getString("score") + "+";
+            top10 += job.getString("username") + "," + job.getString("score") + "," + job.getString("place") + "+";
         }
         try {
             dos.writeUTF("top10XO" + top10);
@@ -465,9 +465,9 @@ public class ClientHandler implements Runnable {
     private void gameLeaderBoardHangman() {
         JSONArray hangTop = (JSONArray) Server.json.get("topHangman");
         String top10 = "";
-        for (Object ob:hangTop) {
+        for (Object ob : hangTop) {
             JSONObject job = (JSONObject) ob;
-            top10 += job.getString("username") + "," + job.getString("score") + "+";
+            top10 += job.getString("username") + "," + job.getString("score") + "," + job.getString("place") + "+";
         }
         try {
             dos.writeUTF("top10Hangman" + top10);

@@ -451,7 +451,7 @@ public class ClientHandler implements Runnable {
         String top10 = "";
         for (Object ob : xoTop) {
             JSONObject job = (JSONObject) ob;
-            top10 += job.getString("username") + "," + job.getString("score") + "," + job.getString("place") + "+";
+            top10 += (job.getString("username") + "," + job.getString("score") + "," + job.getString("place") + ",+");
         }
         try {
             dos.writeUTF("top10XO" + top10);
@@ -467,7 +467,7 @@ public class ClientHandler implements Runnable {
         String top10 = "";
         for (Object ob : hangTop) {
             JSONObject job = (JSONObject) ob;
-            top10 += job.getString("username") + "," + job.getString("score") + "," + job.getString("place") + "+";
+            top10 += job.getString("username") + "," + job.getString("score") + "," + job.getString("place") + ",+";
         }
         try {
             dos.writeUTF("top10Hangman" + top10);
@@ -530,7 +530,7 @@ public class ClientHandler implements Runnable {
     }
 
     private void writeToFile() {
-        try (FileWriter file = new FileWriter("D:\\android\\net\\src\\data_base.json")) {
+        try (FileWriter file = new FileWriter("C:\\Users\\Tahamousavi\\IdeaProjects\\ServerPlato3\\src\\data_base.json")) {
 
             file.write(Server.json.toString());
             file.flush();

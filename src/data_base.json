@@ -27,5 +27,32 @@
       "score": "80",
       "place": "5"
     }
+  ],
+  "topHangman": [
+    {
+      "username": "ali",
+      "score": "170",
+      "place": "1"
+    },
+    {
+      "username": "shirin",
+      "score": "150",
+      "place": "2"
+    },
+    {
+      "username": "maryam",
+      "score": "135",
+      "place": "3"
+    },
+    {
+      "username": "reza",
+      "score": "130",
+      "place": "4"
+    },
+    {
+      "username": "pooya",
+      "score": "120",
+      "place": "5"
+    }
   ]
 }

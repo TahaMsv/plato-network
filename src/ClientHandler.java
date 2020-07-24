@@ -1,3 +1,4 @@
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.DataInputStream;
@@ -64,8 +65,10 @@ public class ClientHandler implements Runnable {
                     gameXORank(message);
                 } else if (message.startsWith("gameHangmanRank")) {
                     gameHangmanRank(message);
-                } else if (message.startsWith("gameLeaderBoard")) {
-                    gameLeaderBoard(message);
+                } else if (message.startsWith("gameLeaderBoardXO")) {
+                    gameLeaderBoardXO();
+                } else if (message.startsWith("gameLeaderBoardHangman")) {
+                    gameLeaderBoardHangman();
                 } else if (message.startsWith("chosenWordHangMan")) {
                     onePlayerChoseTheWordForHangman(message);
                 } else if (message.startsWith("waitingRoomForHangman")) {
@@ -158,8 +161,8 @@ public class ClientHandler implements Runnable {
                 if (appUsers.getPassword().equals(password)) {
                     currUser = appUsers;
 
-                    for (AppUsers appUser:Server.setOfUsers) {
-                        if (currUser.getUsername().equals(appUser.getUsername())){
+                    for (AppUsers appUser : Server.setOfUsers) {
+                        if (currUser.getUsername().equals(appUser.getUsername())) {
                             currUser.setFriends(appUser.getFriends());
                             currUser.setAllMessages(appUser.getAllMessages());
                         }
@@ -443,8 +446,35 @@ public class ClientHandler implements Runnable {
         }
     }
 
-    private void gameLeaderBoard(String clMsg) {
-        System.out.println(clMsg);
+    private void gameLeaderBoardXO() {
+        JSONArray xoTop = (JSONArray) Server.json.get("topXO");
+        String top10 = "";
+        for (Object ob:xoTop) {
+            JSONObject job = (JSONObject) ob;
+            top10 += job.getString("username") + "," + job.getString("score") + "+";
+        }
+        try {
+            dos.writeUTF("top10XO" + top10);
+            dos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void gameLeaderBoardHangman() {
+        JSONArray hangTop = (JSONArray) Server.json.get("topHangman");
+        String top10 = "";
+        for (Object ob:hangTop) {
+            JSONObject job = (JSONObject) ob;
+            top10 += job.getString("username") + "," + job.getString("score") + "+";
+        }
+        try {
+            dos.writeUTF("top10Hangman" + top10);
+            dos.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void addNewUserToJsonFile(String username, String password) {
